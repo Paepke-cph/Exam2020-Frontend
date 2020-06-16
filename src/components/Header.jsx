@@ -29,8 +29,8 @@ export default function Header() {
           </IconButton>
         )}
         {authenticateRole('admin') && (
-          <IconButton component={NavLink} to='/scrape' color='inherit'>
-            Scrape
+          <IconButton component={NavLink} to='/adminPage' color='inherit'>
+            Admin page
           </IconButton>
         )}
         {isLoggedIn && (

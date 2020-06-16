@@ -5,6 +5,8 @@ import Home from '../components/Home.jsx';
 import ProtectedRoute from '../components/routes/ProtectedRoute.jsx';
 import Unauthorized from '../components/Unauthorized.jsx';
 import Recipes from '../components/recipes/Recipes.jsx';
+import AdminPage from '../components/admin/AdminPage.jsx';
+
 const Routes = () => {
   return (
     <Switch>
@@ -13,6 +15,9 @@ const Routes = () => {
       </Route>
       <ProtectedRoute authenticatedRoles={['admin', 'user']} path='/recipe'>
         <Recipes />
+      </ProtectedRoute>
+      <ProtectedRoute authenticatedRoles={['admin']} path='/adminPage'>
+        <AdminPage />
       </ProtectedRoute>
       <ProtectedRoute authenticatedRoles={['admin', 'user']} path='/scrape'>
         <NoMatch />

@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
+import {
+  TextField,
+  Paper,
+  FormControl,
+  FormControlLabel,
+  Button,
+  Checkbox
+} from '@material-ui/core';
 import RecipeCard from './RecipeCard.jsx';
 import { apiUtils } from '../../utils/apiUtils.js';
 
@@ -14,22 +15,39 @@ const Recipes = () => {
   const opts = apiUtils.makeOptions('GET');
   const [storedItems, setStoredItems] = useState();
   const [storedRecipes, setStoredRecipes] = useState();
-  const [searchId, setSearchId] = useState('');
+  const [searchId, setSearchId] = useState(0);
+  const [searchPrepTime, setSearchPrepTime] = useState(0);
+
+  let selectedItems = [];
 
   useEffect(() => {
     apiUtils.fetchData('/item', opts).then((data) => setStoredItems(data));
     apiUtils.fetchData('/recipe', opts).then((data) => setStoredRecipes(data));
   }, []);
 
-  const selectedItems = [];
+  const handleClear = () => {
+    apiUtils.fetchData('/recipe', opts).then((data) => setStoredRecipes(data));
+    setSearchId(0);
+    setSearchPrepTime(0);
+    selectedItems = { ...[] };
+  };
 
   const handleSearch = () => {
-    if (searchId !== '') {
-      console.log(searchId);
-    } else {
-      let opts = apiUtils.makeOptions('POST', { selectedItems });
-      apiUtils.fetchData('/recipe', opts).then((data) => setStoredItems(data));
-    }
+    let filtered = storedRecipes.filter((recipe) => {
+      if (Number(searchId) > 0) {
+        if (Number(searchPrepTime) > 0) {
+          return (
+            recipe.id == Number(searchId) &&
+            recipe.preparationTime <= Number(searchPrepTime)
+          );
+        } else {
+          return recipe.id == Number(searchId);
+        }
+      } else if (Number(searchPrepTime) > 0) {
+        return recipe.preparationTime <= Number(searchPrepTime);
+      }
+    });
+    setStoredRecipes([...filtered]);
   };
 
   const handleItemSelect = (event) => {
@@ -65,9 +83,18 @@ const Recipes = () => {
                     id='search-id'
                     label='ID'
                     value={searchId}
-                    type='search'
+                    type='number'
                     onChange={(event) => {
                       setSearchId(event.target.value);
+                    }}
+                  />
+                  <TextField
+                    id='search-prepTime'
+                    label='Prep Time'
+                    value={searchPrepTime}
+                    type='number'
+                    onChange={(event) => {
+                      setSearchPrepTime(event.target.value);
                     }}
                   />
                   <Grid item xs={12}>
@@ -95,6 +122,13 @@ const Recipes = () => {
                     onClick={handleSearch}
                   >
                     Search
+                  </Button>
+                  <Button
+                    variant='contained'
+                    color='secondary'
+                    onClick={handleClear}
+                  >
+                    Clear
                   </Button>
                 </FormControl>
               </Grid>
