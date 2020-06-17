@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { apiUtils } from '../../utils/apiUtils.js';
-import {
-  FormControl,
-  FormControlLabel,
-  TextField,
-  Button,
-  Checkbox
-} from '@material-ui/core';
+import { FormControl, TextField, Button, Grid } from '@material-ui/core';
+import AdminRecipeCard from './AdminRecipeCard.jsx';
 const AdminPage = () => {
   const emptyRecipe = {
-    id: -1,
+    id: 0,
     directions: '',
     ingredients: [],
     preparationTime: 0
@@ -17,11 +12,7 @@ const AdminPage = () => {
   const opts = apiUtils.makeOptions('GET');
   const [storedItems, setStoredItems] = useState();
   const [storedRecipes, setStoredRecipes] = useState();
-  const [searchId, setSearchId] = useState('');
-
   const [currentRecipe, setCurrentRecipe] = useState(emptyRecipe);
-
-  let selectedItems = [];
 
   useEffect(() => {
     apiUtils.fetchData('/item', opts).then((data) => setStoredItems(data));
@@ -60,7 +51,6 @@ const AdminPage = () => {
       ingredients: ingredients,
       preparationTime: preparationTime
     });
-    selectedItems = { ...ingredients };
   };
 
   const handleSubmit = () => {
@@ -77,6 +67,13 @@ const AdminPage = () => {
     }
   };
 
+  const removeIngredient = (ingredient) => {
+    let filtered = currentRecipe.ingredients.filter((cur) => {
+      return ingredient.id !== cur.id;
+    });
+    setCurrentRecipe({ ...currentRecipe, ingredients: filtered });
+  };
+
   return (
     <div>
       <h1>Admin Page</h1>
@@ -87,6 +84,7 @@ const AdminPage = () => {
             id='preparationTime'
             value={currentRecipe.preparationTime}
             onChange={handleChange}
+            type='number'
             placeholder='Preparation Time'
           ></TextField>
         </FormControl>
@@ -97,10 +95,32 @@ const AdminPage = () => {
             id='directions'
             value={currentRecipe.directions}
             onChange={handleChange}
+            type='number'
             placeholder='Directions'
           ></TextField>
         </FormControl>
       </div>
+      {currentRecipe.ingredients.length > 0 &&
+        currentRecipe.ingredients.map((ingredient) => {
+          return (
+            <div key={ingredient.ingredient.key}>
+              <TextField
+                value={ingredient.ingredient.name}
+                disabled={true}
+              ></TextField>
+              <TextField value={ingredient.amount} disabled={true}></TextField>
+              <Button
+                variant='outlined'
+                color='secondary'
+                onClick={() => {
+                  removeIngredient(ingredient);
+                }}
+              >
+                Remove
+              </Button>
+            </div>
+          );
+        })}
       <Button color='primary' onClick={handleSubmit}>
         {currentRecipe.id === -1 ? 'New' : 'Update'}
       </Button>
@@ -112,32 +132,18 @@ const AdminPage = () => {
       >
         Clear
       </Button>
-      <ul>
-        {Array.isArray(storedRecipes) &&
-          storedRecipes.map((recipe) => {
-            return (
-              <li key={recipe.id}>
-                Recipe ID: {recipe.id}
-                <Button
-                  value={recipe.id}
-                  color='primary'
-                  onClick={(event) => {
-                    handleUpdateSelect(recipe);
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  value={recipe.id}
-                  color='secondary'
-                  onClick={deleteRecipe}
-                >
-                  Delete
-                </Button>
-              </li>
-            );
-          })}
-      </ul>
+      {Array.isArray(storedRecipes) &&
+        storedRecipes.map((recipe) => {
+          return (
+            <Grid item xs={12} key={recipe.id}>
+              <AdminRecipeCard
+                recipe={recipe}
+                deleteRecipe={deleteRecipe}
+                editRecipe={handleUpdateSelect}
+              />
+            </Grid>
+          );
+        })}
     </div>
   );
 };

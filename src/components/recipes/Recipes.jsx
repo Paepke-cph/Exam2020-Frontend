@@ -60,19 +60,6 @@ const Recipes = () => {
   return (
     <>
       <h1>Recipes</h1>
-      {Array.isArray(storedRecipes) && (
-        <Paper>
-          <Grid item xs={12}>
-            <Grid container justify='center'>
-              {storedRecipes.map((recipe) => (
-                <Grid key={recipe.id}>
-                  <RecipeCard recipe={recipe} />
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-        </Paper>
-      )}
       {Array.isArray(storedItems) && (
         <Grid>
           <Paper>
@@ -117,14 +104,14 @@ const Recipes = () => {
                     ))}
                   </Grid>
                   <Button
-                    variant='contained'
+                    variant='outlined'
                     color='primary'
                     onClick={handleSearch}
                   >
                     Search
                   </Button>
                   <Button
-                    variant='contained'
+                    variant='outlined'
                     color='secondary'
                     onClick={handleClear}
                   >
@@ -135,6 +122,17 @@ const Recipes = () => {
             </Grid>
           </Paper>
         </Grid>
+      )}
+      {Array.isArray(storedRecipes) && (
+        <Paper>
+          <Grid container spacing={3}>
+            {storedRecipes.map((recipe) => (
+              <Grid item xs={6} key={recipe.id}>
+                <RecipeCard recipe={recipe} />
+              </Grid>
+            ))}
+          </Grid>
+        </Paper>
       )}
     </>
   );
