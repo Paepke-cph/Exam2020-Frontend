@@ -59,6 +59,7 @@ function LoggedOut({ performLogin, change }) {
           id='password'
           label='Password'
           variant='outlined'
+          type='password'
         />
         <Button variant='outlined' color='primary' onClick={performLogin}>
           Login

@@ -95,7 +95,7 @@ const AdminPage = () => {
             id='directions'
             value={currentRecipe.directions}
             onChange={handleChange}
-            type='number'
+            type='search'
             placeholder='Directions'
           ></TextField>
         </FormControl>
